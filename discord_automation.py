@@ -30,4 +30,4 @@ with open(output_file, 'w', encoding='utf-8') as file:
     for name, timestamp, content in tqdm(n, colour="red"):
         file.write(f"Nickname: {name}\nTimestamp: {timestamp}\nMessage: {content}\n\n")
 
-print(f"[bold yellow] File saved as {output_file} [/bold yellow]")
+print(f"\n[bold yellow] File saved as {output_file} [/bold yellow]")
