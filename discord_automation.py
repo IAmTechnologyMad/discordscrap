@@ -8,8 +8,9 @@ import os
 root = tk.Tk()
 root.withdraw()
 
-print("[bold green] WELCOME TO RAPID FREELANCIN SCRAP SERVICE [/bold green]")
-print("[bold white] ----------------------------------------- [/bold white]\n")
+print("\n \n[bold white]  ------------------------------------------- [/bold white]")
+print("[bold green] | WELCOME TO RAPID FREELANCIN SCRAP SERVICE |[/bold green]")
+print("[bold white]  ------------------------------------------- [/bold white]\n")
 
 file_paths = filedialog.askopenfilenames(filetypes=[("JSON files", "*.json")])
 
