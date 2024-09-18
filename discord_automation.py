@@ -28,7 +28,7 @@ for file_path in file_paths:
 
     output_file = f"{file_name}.txt"
     with open(output_file, 'w', encoding='utf-8') as file:
-        for name, timestamp, content in tqdm(n, desc=f"Processing {file_name}", colour="red"):
+        for name, timestamp, content in tqdm(n, colour="red"):
             file.write(f"Nickname: {name}\nTimestamp: {timestamp}\nMessage: {content}\n\n")
 
     print(f"\n[bold yellow] File saved as {output_file} [/bold yellow]\n")
