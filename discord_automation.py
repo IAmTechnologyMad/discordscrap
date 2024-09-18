@@ -2,63 +2,32 @@ import json
 import tkinter as tk
 from tkinter import filedialog
 from rich import print
-from rich.prompt import Prompt
+from tqdm import tqdm
+import os
 
+root = tk.Tk()
+root.withdraw()
 
-def extract_user_info(data, option):
-    user_info = []
-    keys_to_check = ['username', 'user_name', 'userID', 'displayName', 'nickname', 'user']
+print("[bold green] WELCOME TO RAPID FREELANCIN SCRAP SERVICE [/bold green]")
+print("[bold white] ----------------------------------------- [/bold white]\n")
+
+file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+
+file_name = os.path.splitext(os.path.basename(file_path))[0]
+
+with open(file_path, 'r', encoding='utf-8') as file:
+    data = json.load(file)
     
-    if isinstance(data, list):
-        for item in data:
-            if isinstance(item, dict):
-                for key in keys_to_check:
-                    if key in item:
-                        if option == 1:
-                            user_info.append({'username': item[key]})
-                        elif option == 2:
-                            user_info.append({'username': item[key], 'content': item.get('content', 'No content')})
-                        break
-            else:
-                print(f"Error: Item is not a dictionary: {item}")
-    else:
-        print("Error: Data is neither a list nor a dictionary")
-    
-    return user_info
+print(f"File chosen: [bold yellow]{file_name}.json[/bold yellow]\n")
 
-def upload_file():
-    root = tk.Tk()
-    root.withdraw()
-    file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
-    
-    if file_path:
-        try:
-            with open(file_path, 'r') as file:
-                data = json.load(file)
-                print(data)
-                
-                option = int(Prompt.ask("[bold yellow] Choose an option [/bold yellow] ( [bold blue] 1: Extract username [/bold blue], [bold red] 2: Extract username and message) [/bold red]"))
-                
-                user_info = extract_user_info(data, option)
-                
-                base_name = file_path.rsplit('.', 1)[0]
-                output_file_name = f"{base_name}.txt"
-                
-                with open(output_file_name, "w") as output_file:
-                    for info in user_info:
-                        if option == 1:
-                            output_file.write(f"{info['username']}\n")
-                        elif option == 2:
-                            output_file.write(f"{info['username']}: {info['content']}\n")
-                        
-                print(f"[bold yellow] File saved to {output_file_name} [/bold yellow]")
-        except json.JSONDecodeError as e:
-            print(f"Error decoding JSON: {e}")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+n = [
+    (message['author']['name'], message['timestamp'], message['content'])
+    for message in data['messages'] if 'name' in message['author']
+]
 
-upload_file()
+output_file = f"{file_name}.txt"
+with open(output_file, 'w', encoding='utf-8') as file:
+    for name, timestamp, content in tqdm(n, colour="red"):
+        file.write(f"Nickname: {name}\nTimestamp: {timestamp}\nMessage: {content}\n\n")
 
-if __name__ == "__main__":
-    upload_file()
-
+print(f"[bold yellow] File saved as {output_file} [/bold yellow]")
