@@ -1,37 +1,52 @@
 import json
-import tkinter as tk
-from tkinter import filedialog
-from rich import print
-from tqdm import tqdm
 import os
-
-root = tk.Tk()
-root.withdraw()
+import subprocess
+from tqdm import tqdm
+from rich import print
 
 print("\n \n[bold white]  ----------------------------------------- [/bold white]")
 print("[bold green]  WELCOME TO RAPID FREELANCIN SCRAP SERVICE [/bold green]")
 print("[bold white]  ----------------------------------------- [/bold white]\n")
 
-file_paths = filedialog.askopenfilenames(filetypes=[("JSON files", "*.json")])
+TOKEN = input("Enter your Discord Token: ")
+num_channels = int(input("\n Enter the number of channels to scrape: "))
+channel_ids = []
 
-for file_path in file_paths:
-    file_name = os.path.splitext(os.path.basename(file_path))[0]
+for i in range(num_channels):
+    channel_id = input(f"\n Enter the Discord Channel ID for channel {i+1}: ")
+    channel_ids.append(channel_id)
 
-    with open(file_path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
+EXPORTDIRECTORY = "C:\\Users\\kents\\Downloads\\scrap\\"
+EXEPATH = "C:\\Users\\kents\\Downloads\\DiscordChatExporter.Cli.win-x64\\"
+EXPORTFORMAT = "Json"
+
+for i, CHANNEL in enumerate(channel_ids):
+    OUTPUT_JSON = f"{EXPORTDIRECTORY}discord_chat_channel_{i+1}.json"
     
-    print(f"File chosen: [bold yellow]{file_name}.json[/bold yellow]\n")
+    print(f"\n[bold green]Scraping Discord channel {i+1}...[/bold green]")
+    subprocess.run([
+        f"{EXEPATH}DiscordChatExporter.Cli", "export", 
+        "-t", TOKEN, 
+        "-c", CHANNEL, 
+        "-f", EXPORTFORMAT, 
+        "-o", OUTPUT_JSON
+    ])
+    
+    print(f"[bold yellow]JSON file saved at: {OUTPUT_JSON}[/bold yellow]\n")
+
+    with open(OUTPUT_JSON, 'r', encoding='utf-8') as file:
+        data = json.load(file)
 
     n = [
         (message['author']['name'], message['timestamp'], message['content'])
         for message in data['messages'] if 'name' in message['author']
     ]
 
-    output_file = f"{file_name}.txt"
+    output_file = f"{EXPORTDIRECTORY}discord_chat_channel_{i+1}.txt"
     with open(output_file, 'w', encoding='utf-8') as file:
         for name, timestamp, content in tqdm(n, colour="red"):
             file.write(f"Name: {name}\nTimestamp: {timestamp}\nMessage: {content}\n\n")
 
-    print(f"\n[bold yellow] File saved as {output_file} [/bold yellow]\n")
-    
-print("[bold green] CODE EXIT HERE, THANKYOU! [/bold green]")
+    print(f"\n[bold yellow]File saved as {output_file} [/bold yellow]\n")
+
+print("[bold green]CODE EXIT HERE, THANKYOU![/bold green]")
